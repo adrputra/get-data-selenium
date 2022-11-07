@@ -1,27 +1,43 @@
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 import os
 import urllib.request
 from datetime import datetime
 import youtubeAPI
+import time
 # import json
 
 PATH = "chromedriver.exe"
 options = webdriver.ChromeOptions()
 options.headless = False
-driver = webdriver.Chrome(executable_path=PATH, options=options)    
+driver = webdriver.Chrome(executable_path=PATH, options=options)
 
 def Youtube(tag,n):
     driver.get("https://www.youtube.com/hashtag/%s"%tag)
     links = []
-
-    for i in range(n):
-        for j in range(2):
-            # links.append(driver.find_element_by_xpath(f"//div[@id='primary']//ytd-rich-grid-row[{i+1}]//ytd-rich-item-renderer[{j+1}]//a[@id='video-title-link']").get_attribute('href'))
-            link = driver.find_element_by_xpath(f"//div[@id='primary']//ytd-rich-grid-row[{i+1}]//ytd-rich-item-renderer[{j+1}]//a[@id='video-title-link']").get_attribute('href')
-            links.append(link.split('=')[1])
+    try:
+        for i in range(n):
+            for j in range(2):
+                # links.append(driver.find_element_by_xpath(f"//div[@id='primary']//ytd-rich-grid-row[{i+1}]//ytd-rich-item-renderer[{j+1}]//a[@id='video-title-link']").get_attribute('href'))
+                link = driver.find_element_by_xpath(f"//div[@id='primary']//ytd-rich-grid-row[{i+1}]//ytd-rich-item-renderer[{j+1}]//a[@id='video-title-link']").get_attribute('href')
+                print(link)
+                if "shorts" in link:
+                    continue
+                else:
+                    links.append(link.split('=')[1])
+                    driver.execute_script("window.scrollBy(0, 500)")
+                    time.sleep(2)
+    except NoSuchElementException:
+            getLikesYoutubeAPI(links)
+        
     print(links)
     # getLikesYoutube(links)
-    getLikesYoutubeAPI(links)
+    getLikesYoutubeAPI(breakList(links))
+
+def breakList(my_list):
+    n=50
+    final = [my_list[i * n:(i + 1) * n] for i in range((len(my_list) + n - 1) // n )]
+    return final
 
 def getLikesYoutube(links):
     data = []
@@ -41,18 +57,30 @@ def getLikesYoutube(links):
 
 def getLikesYoutubeAPI(videoID):
     # resp = json.load(youtubeAPI.main(videoID))
-    resp = youtubeAPI.main(videoID)
-    data = []
-    items = resp['items']
-    for item in items:
-        data.append([item['id'], item['snippet']['title'], item['statistics']['viewCount'], item['statistics']['likeCount'], item['statistics']['commentCount']])
-    writeToFile(data)
+    for i in range(len(videoID)):
+        resp = youtubeAPI.main(videoID[i])
+        data = []
+        items = resp['items']
+        dt = datetime.now()
+        ts = datetime.timestamp(dt)
+        rawData = open("Raw_Data_"+str(ts)+".txt","a+", encoding='utf-8')
+        rawData.writelines(str(items))
+        for item in items:
+            try:
+                data.append([item['id'], item['snippet']['title'], item['statistsics']['viewCount'], item['statistics']['likeCount'], item['statistics']['commentCount']])
+            except KeyError:
+                pass
+        writeToFile(data,videoID[i])
 
-def writeToFile(data):
+def writeToFile(data,videoID):
     dt = datetime.now()
     ts = datetime.timestamp(dt)
     result = open("Youtube_Get_Data_Result_"+str(ts)+".txt","a+", encoding='utf-8')
+    print("Writing data ...")
     for val in data:
         result.writelines(f"{val[0]};{val[1]};{val[2]};{val[3]};{val[4]};\n")
+    saveVideoID = open("RawVideoID.txt","a+",encoding='utf-8')
+    for val in videoID:
+        saveVideoID.writelines(f"{val};")
 
-Youtube("realmadrid",2)
+Youtube("indonesia",1)

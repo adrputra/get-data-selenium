@@ -32,14 +32,14 @@ def main(videoID):
     youtube = build(api_service_name, api_version, developerKey=api_key)
 
     vID = ",".join(videoID)
-
+    # print(vID)
     request = youtube.videos().list(
         part ="id,snippet,contentDetails,statistics,status,topicDetails",
         id = f"{vID}"
     )
     response = request.execute()
 
-    print(response)
+    # print(response)
     return response
 
 # if __name__ == "__main__":
