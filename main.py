@@ -91,7 +91,7 @@ def writeToFile(data,videoID):
     ts = datetime.timestamp(dt)
     result = open("Youtube_Get_Data_Result_"+".txt","a+", encoding='utf-8')
     for val in data:
-        result.writelines(f"{val[0]};{val[1]};{val[2]};{val[3]};{val[4]};{val[5]};\n")
+        result.writelines(f"{val[0]};{val[1]};{val[2]};{val[3]};{val[4]};{val[5]};{val[6]};\n")
     saveVideoID = open("RawVideoID.txt","a+",encoding='utf-8')
     for val in videoID:
         saveVideoID.writelines(f"{val};")
