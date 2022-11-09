@@ -28,11 +28,11 @@ def Youtube(tag,n):
                     driver.execute_script("window.scrollBy(0, 500)")
                     time.sleep(2)
     except NoSuchElementException:
-            getLikesYoutubeAPI(links)
+            getLikesYoutubeAPI(tag, breakList(links))
         
     print(links)
     # getLikesYoutube(links)
-    getLikesYoutubeAPI(breakList(links))
+    getLikesYoutubeAPI(tag, breakList(links))
 
 def breakList(my_list):
     n=50
@@ -55,7 +55,7 @@ def getLikesYoutube(links):
     print(data)
     writeToFile(data)
 
-def getLikesYoutubeAPI(videoID):
+def getLikesYoutubeAPI(tag, videoID):
     # resp = json.load(youtubeAPI.main(videoID))
     for i in range(len(videoID)):
         resp = youtubeAPI.main(videoID[i])
@@ -75,7 +75,7 @@ def getLikesYoutubeAPI(videoID):
                 else:
                     likeCount = 0
                 commentCount = item['statistics']['commentCount']
-                data.append([vid,title,viewCount,likeCount,commentCount,hastag,channel])
+                data.append([vid,title,viewCount,likeCount,commentCount,tag,channel])
                 # data.append([item['id'], item['snippet']['title'], item['statistsics']['viewCount'], item['statistics']['likeCount'], item['statistics']['commentCount']])
             except KeyError:
                 continue
