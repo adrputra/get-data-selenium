@@ -1,12 +1,14 @@
 import tkinter as tk
 from tkinter import filedialog
 import os
-from main import Youtube
+import main
 
 hastag = ""
 count = 0
 
 def setHastag():
+    global hastag
+    global count
     hastag = inputHastag.get()
     count = int(inputCount.get())
     label = tk.Label(frame, text=f"Hastag : {hastag}. Count : {count}")
@@ -14,8 +16,8 @@ def setHastag():
     print("A")
 
 def initiateGetData():
-    print("Initiating...")
-    Youtube(hastag, count)
+    print("Initiating..., ", hastag, count)
+    main.Youtube(hastag, count)
 
 root = tk.Tk()
 

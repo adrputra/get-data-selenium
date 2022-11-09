@@ -12,7 +12,11 @@ options = webdriver.ChromeOptions()
 options.headless = False
 driver = webdriver.Chrome(executable_path=PATH, options=options)
 
+def test(tag, n):
+    print(tag,n)
+    
 def Youtube(tag,n):
+    print(tag,n)
     driver.get("https://www.youtube.com/hashtag/%s"%tag)
     links = []
     try:
@@ -30,7 +34,7 @@ def Youtube(tag,n):
     except NoSuchElementException:
             getLikesYoutubeAPI(tag, breakList(links))
         
-    print(links)
+    print("A",links)
     # getLikesYoutube(links)
     getLikesYoutubeAPI(tag, breakList(links))
 
