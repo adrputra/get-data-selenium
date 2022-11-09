@@ -61,26 +61,35 @@ def getLikesYoutubeAPI(videoID):
         resp = youtubeAPI.main(videoID[i])
         data = []
         items = resp['items']
-        dt = datetime.now()
-        ts = datetime.timestamp(dt)
-        rawData = open("Raw_Data_"+str(ts)+".txt","a+", encoding='utf-8')
+        dt = datetime.now().strftime("%Y%m%d")
+        rawData = open("Raw_Data_"+dt+"_"+str(i)+".txt","a+", encoding='utf-8')
         rawData.writelines(str(items))
         for item in items:
             try:
-                data.append([item['id'], item['snippet']['title'], item['statistsics']['viewCount'], item['statistics']['likeCount'], item['statistics']['commentCount']])
+                vid = item['id']
+                channel = item['snippet']['channelTitle']
+                title = item['snippet']['title']
+                viewCount = item['statistics']['viewCount']
+                if "likeCount" in item['statistics']:
+                    likeCount = item['statistics']['likeCount']
+                else:
+                    likeCount = 0
+                commentCount = item['statistics']['commentCount']
+                data.append([vid,title,viewCount,likeCount,commentCount,hastag,channel])
+                # data.append([item['id'], item['snippet']['title'], item['statistsics']['viewCount'], item['statistics']['likeCount'], item['statistics']['commentCount']])
             except KeyError:
-                pass
+                continue
+        # print(data)
         writeToFile(data,videoID[i])
 
 def writeToFile(data,videoID):
     dt = datetime.now()
     ts = datetime.timestamp(dt)
-    result = open("Youtube_Get_Data_Result_"+str(ts)+".txt","a+", encoding='utf-8')
-    print("Writing data ...")
+    result = open("Youtube_Get_Data_Result_"+".txt","a+", encoding='utf-8')
     for val in data:
-        result.writelines(f"{val[0]};{val[1]};{val[2]};{val[3]};{val[4]};\n")
+        result.writelines(f"{val[0]};{val[1]};{val[2]};{val[3]};{val[4]};{val[5]};\n")
     saveVideoID = open("RawVideoID.txt","a+",encoding='utf-8')
     for val in videoID:
         saveVideoID.writelines(f"{val};")
 
-Youtube("indonesia",1)
+# Youtube("indonesia",100)
