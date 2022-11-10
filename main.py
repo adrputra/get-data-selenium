@@ -9,15 +9,19 @@ import time
 
 PATH = "chromedriver.exe"
 options = webdriver.ChromeOptions()
-options.headless = False
+options.headless = True
 driver = webdriver.Chrome(executable_path=PATH, options=options)
+dirPath = ""
 
 def test(tag, n):
     print(tag,n)
     
-def Youtube(tag,n):
+def Youtube(tag,n, path):
     print(tag,n)
+    global dirPath
+    dirPath = path
     driver.get("https://www.youtube.com/hashtag/%s"%tag)
+    # driver.get(f"https://www.youtube.com/results?search_query=%23{tag}&sp=CAMSAhABQgsSCWluZG9uZXNpYQ%253D%253D")
     links = []
     try:
         for i in range(n):
@@ -29,8 +33,8 @@ def Youtube(tag,n):
                     continue
                 else:
                     links.append(link.split('=')[1])
-                    driver.execute_script("window.scrollBy(0, 500)")
-                    time.sleep(2)
+                    driver.execute_script("window.scrollBy(0, 1000)")
+                    time.sleep(1)
     except NoSuchElementException:
             getLikesYoutubeAPI(tag, breakList(links))
         
@@ -85,14 +89,15 @@ def getLikesYoutubeAPI(tag, videoID):
                 continue
         # print(data)
         writeToFile(data,videoID[i])
+    print("COMPLETE")
 
 def writeToFile(data,videoID):
     dt = datetime.now()
     ts = datetime.timestamp(dt)
-    result = open("Youtube_Get_Data_Result_"+".txt","a+", encoding='utf-8')
+    result = open(f"{dirPath}\Youtube_Get_Data_Result_"+".txt","a+", encoding='utf-8')
     for val in data:
-        result.writelines(f"{val[0]};{val[1]};{val[2]};{val[3]};{val[4]};{val[5]};{val[6]};\n")
-    saveVideoID = open("RawVideoID.txt","a+",encoding='utf-8')
+        result.writelines(f"{val[0]};;{val[1]};;{val[2]};;{val[3]};;{val[4]};;{val[5]};;{val[6]};;\n")
+    saveVideoID = open(f"{dirPath}\RawVideoID.txt","a+",encoding='utf-8')
     for val in videoID:
         saveVideoID.writelines(f"{val};")
 
