@@ -9,7 +9,7 @@ import time
 
 PATH = "chromedriver.exe"
 options = webdriver.ChromeOptions()
-options.headless = True
+options.headless = False
 driver = webdriver.Chrome(executable_path=PATH, options=options)
 dirPath = ""
 
@@ -20,25 +20,35 @@ def Youtube(tag,n, path):
     print(tag,n)
     global dirPath
     dirPath = path
-    driver.get("https://www.youtube.com/hashtag/%s"%tag)
-    # driver.get(f"https://www.youtube.com/results?search_query=%23{tag}&sp=CAMSAhABQgsSCWluZG9uZXNpYQ%253D%253D")
+    # driver.get("https://www.youtube.com/hashtag/%s"%tag)
+    driver.get(f"https://www.youtube.com/results?search_query=%23{tag}&sp=CAMSAhABQgUSA2cyMA%253D%253D")
     links = []
     try:
         for i in range(n):
-            for j in range(2):
-                # links.append(driver.find_element_by_xpath(f"//div[@id='primary']//ytd-rich-grid-row[{i+1}]//ytd-rich-item-renderer[{j+1}]//a[@id='video-title-link']").get_attribute('href'))
-                link = driver.find_element_by_xpath(f"//div[@id='primary']//ytd-rich-grid-row[{i+1}]//ytd-rich-item-renderer[{j+1}]//a[@id='video-title-link']").get_attribute('href')
-                print(link)
-                if "shorts" in link:
-                    continue
-                else:
-                    links.append(link.split('=')[1])
-                    driver.execute_script("window.scrollBy(0, 1000)")
-                    time.sleep(1)
+            link = driver.find_element_by_xpath(f"//div[@id='primary']//ytd-video-renderer[{i+1}]//div[@id='dismissible']//a[@id='video-title']").get_attribute('href')
+            print(link)
+            if "shorts" in link:
+                continue
+            else:
+                links.append(link.split('=')[1])
+                driver.execute_script("window.scrollBy(0, 1000)")
+                time.sleep(1)
+        # for i in range(n):
+        #     for j in range(2):
+        #         # links.append(driver.find_element_by_xpath(f"//div[@id='primary']//ytd-rich-grid-row[{i+1}]//ytd-rich-item-renderer[{j+1}]//a[@id='video-title-link']").get_attribute('href'))
+        #         link = driver.find_element_by_xpath(f"//div[@id='primary']//ytd-rich-grid-row[{i+1}]//ytd-rich-item-renderer[{j+1}]//a[@id='video-title-link']").get_attribute('href')
+        #         print(link)
+        #         if "shorts" in link:
+        #             continue
+        #         else:
+        #             links.append(link.split('=')[1])
+        #             driver.execute_script("window.scrollBy(0, 1000)")
+        #             time.sleep(1)
     except NoSuchElementException:
-            getLikesYoutubeAPI(tag, breakList(links))
+        print("NoSuchElementExecption")
+        getLikesYoutubeAPI(tag, breakList(links))
         
-    print("A",links)
+    print(links)
     # getLikesYoutube(links)
     getLikesYoutubeAPI(tag, breakList(links))
 
@@ -70,7 +80,7 @@ def getLikesYoutubeAPI(tag, videoID):
         data = []
         items = resp['items']
         dt = datetime.now().strftime("%Y%m%d")
-        rawData = open("Raw_Data_"+dt+"_"+str(i)+".txt","a+", encoding='utf-8')
+        rawData = open("Raw_Data_"+dt+"_"+str(i)+".txt","w+", encoding='utf-8')
         rawData.writelines(str(items))
         for item in items:
             try:
@@ -94,10 +104,10 @@ def getLikesYoutubeAPI(tag, videoID):
 def writeToFile(data,videoID):
     dt = datetime.now()
     ts = datetime.timestamp(dt)
-    result = open(f"{dirPath}\Youtube_Get_Data_Result_"+".txt","a+", encoding='utf-8')
+    result = open(f"{dirPath}\Youtube_Get_Data_Result_"+".txt","w+", encoding='utf-8')
     for val in data:
         result.writelines(f"{val[0]};;{val[1]};;{val[2]};;{val[3]};;{val[4]};;{val[5]};;{val[6]};;\n")
-    saveVideoID = open(f"{dirPath}\RawVideoID.txt","a+",encoding='utf-8')
+    saveVideoID = open(f"{dirPath}\RawVideoID.txt","w+",encoding='utf-8')
     for val in videoID:
         saveVideoID.writelines(f"{val};")
 
