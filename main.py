@@ -20,6 +20,7 @@ def Youtube(tag,n, path):
     print(tag,n)
     global dirPath
     dirPath = path
+    cleanFileData()
     # driver.get("https://www.youtube.com/hashtag/%s"%tag)
     driver.get(f"https://www.youtube.com/results?search_query=%23{tag}&sp=CAMSAhABQgUSA2cyMA%253D%253D")
     links = []
@@ -57,6 +58,10 @@ def breakList(my_list):
     final = [my_list[i * n:(i + 1) * n] for i in range((len(my_list) + n - 1) // n )]
     return final
 
+def cleanFileData():
+    clean1 = open(f"{dirPath}\Youtube_Get_Data_Result_"+".txt","w", encoding='utf-8')
+    clean2 = open(f"{dirPath}\RawVideoID.txt","w",encoding='utf-8')
+    
 def getLikesYoutube(links):
     data = []
     for link in links:
@@ -80,8 +85,8 @@ def getLikesYoutubeAPI(tag, videoID):
         data = []
         items = resp['items']
         dt = datetime.now().strftime("%Y%m%d")
-        rawData = open("Raw_Data_"+dt+"_"+str(i)+".txt","w+", encoding='utf-8')
-        rawData.writelines(str(items))
+        # rawData = open("Raw_Data_"+dt+"_"+str(i)+".txt","w+", encoding='utf-8')
+        # rawData.writelines(str(items))
         for item in items:
             try:
                 vid = item['id']
@@ -112,3 +117,4 @@ def writeToFile(data,videoID):
         saveVideoID.writelines(f"{val};")
 
 # Youtube("indonesia",100)
+cleanFileData()
