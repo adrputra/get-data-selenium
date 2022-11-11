@@ -9,7 +9,7 @@ import time
 
 PATH = "chromedriver.exe"
 options = webdriver.ChromeOptions()
-options.headless = False
+options.headless = True
 driver = webdriver.Chrome(executable_path=PATH, options=options)
 dirPath = ""
 
