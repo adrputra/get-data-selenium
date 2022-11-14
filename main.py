@@ -13,8 +13,11 @@ options.headless = True
 driver = webdriver.Chrome(executable_path=PATH, options=options)
 dirPath = ""
 
-def test(tag, n):
-    print(tag,n)
+def TikTok(tag,n,path):
+    driver.get(f"https://www.tiktok.com/search/video?q=%23{tag}")
+    vId = []
+    for i in range(n):
+        id = driver.find_element_by_xpath(f"")        
     
 def Youtube(tag,n, path):
     print(tag,n)
@@ -61,22 +64,6 @@ def breakList(my_list):
 def cleanFileData():
     clean1 = open(f"{dirPath}\Youtube_Get_Data_Result_"+".txt","w", encoding='utf-8')
     clean2 = open(f"{dirPath}\RawVideoID.txt","w",encoding='utf-8')
-    
-def getLikesYoutube(links):
-    data = []
-    for link in links:
-        print('Opening', link)
-        driver.get(link)
-        driver.implicitly_wait(10)
-        try:
-            title = driver.find_element_by_xpath("//ytd-watch-metadata//h1").text
-            likes = driver.find_element_by_xpath("//ytd-segmented-like-dislike-button-renderer//span[@role='text']").text
-            views = driver.find_element_by_xpath("//div[@id='info-container']//span[1]").text
-            data.append([link,title,likes,views])
-        except NoSuchElementException:
-            getLikesYoutube(links)
-    print(data)
-    writeToFile(data)
 
 def getLikesYoutubeAPI(tag, videoID):
     # resp = json.load(youtubeAPI.main(videoID))
@@ -99,7 +86,6 @@ def getLikesYoutubeAPI(tag, videoID):
                     likeCount = 0
                 commentCount = item['statistics']['commentCount']
                 data.append([vid,title,viewCount,likeCount,commentCount,tag,channel])
-                # data.append([item['id'], item['snippet']['title'], item['statistsics']['viewCount'], item['statistics']['likeCount'], item['statistics']['commentCount']])
             except KeyError:
                 continue
         # print(data)
@@ -117,4 +103,3 @@ def writeToFile(data,videoID):
         saveVideoID.writelines(f"{val};")
 
 # Youtube("indonesia",100)
-cleanFileData()
