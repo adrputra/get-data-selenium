@@ -1,4 +1,5 @@
 from TikTokApi import TikTokApi
+import json
 
 api = TikTokApi()
 
@@ -6,12 +7,22 @@ def getTikTokAPI(tag, vId):
     data = []
     for id in vId:
         vidInfo = api.video(id=f'{id}').info()
-        vidInfo.replace("\'","\"")
-        vidInfo.replace(True,"True")
-        vidInfo.replace(False,"False")
-        print(vidInfo)
+        vidInfoData = json.dumps(vidInfo).replace("\'","\"")
+        data.append(parseData(tag,json.loads(vidInfoData)))
+    print(data)
 
-# video = api.video(id='7164362493689662722')
+
+def parseData(tag,data):
+    vId = data['video']['id']
+    author = data['author']['nickname']
+    commentCount = data['stats']['commentCount']
+    likeCount = data['stats']['diggCount']
+    viewCount = data['stats']['playCount']
+    shareCount = data['stats']['shareCount']
+    return [vId,author,viewCount,likeCount,commentCount,shareCount,tag]
+    
+# getTikTokAPI("g20",['7164362493689662722'])
+# video = api.video(id='7164362493689662722').info()
 # print(video)
 
 # for video in api.hashtag(name='indonesia').videos(count=5):

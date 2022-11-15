@@ -14,7 +14,10 @@ import time
 import pickle
 
 PATH = "chromedriver.exe"
-
+options = webdriver.ChromeOptions()
+# options.add_argument(f'user-agent={userAgent}')
+options.headless = False
+driver = webdriver.Chrome(executable_path=PATH, options=options)
 dirPath = ""
 tiktokCookiePath = r"tiktokCookie.txt"
 
@@ -23,24 +26,24 @@ def load_cookie(driver, path):
          cookies = pickle.load(cookiesfile)
          for cookie in cookies:
              driver.add_cookie(cookie)
+             print('Cookie loaded')
 
 def TikTok(tag,n):
-    userAgent = UserAgent().random
-    options = webdriver.ChromeOptions()
-    options.add_argument(f'user-agent={userAgent}')
-    options.headless = False
-    driver = webdriver.Chrome(executable_path=PATH, options=options)
+    # userAgent = UserAgent().random
+    driver.maximize_window()
     driver.get(f"https://www.tiktok.com/search/video?q=%23{tag}")
+    # driver.get("https://www.tiktok.com/")
+    driver.implicitly_wait(5)
     load_cookie(driver, tiktokCookiePath)
-    # driver.implicitly_wait(5)
-    ignored_exceptions=(NoSuchElementException,StaleElementReferenceException,)
-    WebDriverWait(driver, 5,ignored_exceptions=ignored_exceptions)\
-                        .until(expected_conditions.presence_of_element_located((By.XPATH, "//div[@id='tiktok-verify-ele']")))
-    time.sleep(5)
-    driver.find_element_by_xpath("//a[@id='verify-bar-close']").click()
-    time.sleep(2)
-    driver.find_element_by_xpath("//button[@data-e2e='search-button']").click()
-    # driver.refresh()
+    # ignored_exceptions=(NoSuchElementException,StaleElementReferenceException,)
+    # WebDriverWait(driver, 10,ignored_exceptions=ignored_exceptions)\
+    #                     .until(expected_conditions.presence_of_element_located((By.XPATH, "//div[@id='tiktok-verify-ele']")))
+    # time.sleep(5)
+    # driver.find_element_by_xpath("//a[@id='verify-bar-close']").click()
+    time.sleep(2.7923)
+    # driver.find_element_by_xpath("//button[@data-e2e='search-button']").click()
+    driver.refresh()
+    time.sleep(1.2485)
     driver.implicitly_wait(5)
     vId = []
     try:
@@ -142,6 +145,6 @@ def Instagram(tag, n):
         print("NoSuchElementException")
 
 # Youtube("indonesia",100,"D:/ADR/Personal/ADR/Self-Project/Test/get-data-selenium-build/data")
-TikTok("g20", 1)
+TikTok("g20", 2)
 
 # Instagram("tag", 2)
