@@ -1,30 +1,69 @@
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import StaleElementReferenceException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions
+from fake_useragent import UserAgent
 import os
 import urllib.request
 from datetime import datetime
 import youtubeAPI
+import tiktokAPI
 import time
-# import json
+import pickle
 
 PATH = "chromedriver.exe"
-options = webdriver.ChromeOptions()
-options.headless = True
-driver = webdriver.Chrome(executable_path=PATH, options=options)
-dirPath = ""
 
-def TikTok(tag,n,path):
+dirPath = ""
+tiktokCookiePath = r"tiktokCookie.txt"
+
+def load_cookie(driver, path):
+     with open(path, 'rb') as cookiesfile:
+         cookies = pickle.load(cookiesfile)
+         for cookie in cookies:
+             driver.add_cookie(cookie)
+
+def TikTok(tag,n):
+    userAgent = UserAgent().random
+    options = webdriver.ChromeOptions()
+    options.add_argument(f'user-agent={userAgent}')
+    options.headless = False
+    driver = webdriver.Chrome(executable_path=PATH, options=options)
     driver.get(f"https://www.tiktok.com/search/video?q=%23{tag}")
+    load_cookie(driver, tiktokCookiePath)
+    # driver.implicitly_wait(5)
+    ignored_exceptions=(NoSuchElementException,StaleElementReferenceException,)
+    WebDriverWait(driver, 5,ignored_exceptions=ignored_exceptions)\
+                        .until(expected_conditions.presence_of_element_located((By.XPATH, "//div[@id='tiktok-verify-ele']")))
+    time.sleep(5)
+    driver.find_element_by_xpath("//a[@id='verify-bar-close']").click()
+    time.sleep(2)
+    driver.find_element_by_xpath("//button[@data-e2e='search-button']").click()
+    # driver.refresh()
+    driver.implicitly_wait(5)
     vId = []
-    for i in range(n):
-        id = driver.find_element_by_xpath(f"")        
+    try:
+        for i in range(n):
+            id = driver.find_element_by_xpath(f"//div[@id='app']//div[@data-e2e='search_video-item-list']//div[@class='tiktok-1soki6-DivItemContainerForSearch e19c29qe9'][{i+1}]//div[@data-e2e='search_video-item']//a").get_attribute('href')
+            print(id)
+            vId.append(id.split('/')[5])
+            # driver.execute_script("window.scrollBy(0, 5000)")
+            if i+1%10 == 0:
+                driver.find_element_by_xpath("//button[@data-e2e='search-load-more']").click()
+            driver.implicitly_wait(1)
+    except NoSuchElementException:
+        print("NoSuchElementException")
+    
+    print(vId)
+    tiktokAPI.getTikTokAPI(tag, vId)
+
     
 def Youtube(tag,n, path):
     print(tag,n)
     global dirPath
     dirPath = path
     cleanFileData()
-    # driver.get("https://www.youtube.com/hashtag/%s"%tag)
     driver.get(f"https://www.youtube.com/results?search_query=%23{tag}&sp=CAMSAhABQgUSA2cyMA%253D%253D")
     links = []
     try:
@@ -35,25 +74,13 @@ def Youtube(tag,n, path):
                 continue
             else:
                 links.append(link.split('=')[1])
-                driver.execute_script("window.scrollBy(0, 1000)")
-                time.sleep(1)
-        # for i in range(n):
-        #     for j in range(2):
-        #         # links.append(driver.find_element_by_xpath(f"//div[@id='primary']//ytd-rich-grid-row[{i+1}]//ytd-rich-item-renderer[{j+1}]//a[@id='video-title-link']").get_attribute('href'))
-        #         link = driver.find_element_by_xpath(f"//div[@id='primary']//ytd-rich-grid-row[{i+1}]//ytd-rich-item-renderer[{j+1}]//a[@id='video-title-link']").get_attribute('href')
-        #         print(link)
-        #         if "shorts" in link:
-        #             continue
-        #         else:
-        #             links.append(link.split('=')[1])
-        #             driver.execute_script("window.scrollBy(0, 1000)")
-        #             time.sleep(1)
+                driver.execute_script("window.scrollBy(0, 5000)")
+                time.sleep(2)
     except NoSuchElementException:
         print("NoSuchElementExecption")
         getLikesYoutubeAPI(tag, breakList(links))
         
     print(links)
-    # getLikesYoutube(links)
     getLikesYoutubeAPI(tag, breakList(links))
 
 def breakList(my_list):
@@ -102,4 +129,19 @@ def writeToFile(data,videoID):
     for val in videoID:
         saveVideoID.writelines(f"{val};")
 
-# Youtube("indonesia",100)
+def Instagram(tag, n):
+    driver.get("https://www.instagram.com/explore/tags/g20/")
+    driver.implicitly_wait(5)
+    igID = []
+    try:
+        for i in range(n):
+            for j in range(3):
+                id = driver.find_element_by_xpath(f"//article//div[@class='_aaq8']//div[@class='_ac7v _aang'][{i+1}]//div[@class='_aabd _aa8k _aanf'][{j+1}]//a").get_attribute('href')
+                print(id)
+    except NoSuchElementException:
+        print("NoSuchElementException")
+
+# Youtube("indonesia",100,"D:/ADR/Personal/ADR/Self-Project/Test/get-data-selenium-build/data")
+TikTok("g20", 1)
+
+# Instagram("tag", 2)
