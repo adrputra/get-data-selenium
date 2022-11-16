@@ -1,0 +1,8 @@
+author-nickname
+stats-commentCount
+stats-diggCount (like)
+stats-playCount
+stats-shareCount
+video-id
+
+//div[@id='app']//div[@data-e2e='search_video-item-list']//div[@class='tiktok-1soki6-DivItemContainerForSearch e19c29qe9'][j]//div[@data-e2e='search_video-item']//a
