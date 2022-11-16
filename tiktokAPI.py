@@ -10,7 +10,7 @@ def getTikTokAPI(tag, vId):
         vidInfoData = json.dumps(vidInfo).replace("\'","\"")
         data.append(parseData(tag,json.loads(vidInfoData)))
     print(data)
-
+    return data
 
 def parseData(tag,data):
     vId = data['video']['id']

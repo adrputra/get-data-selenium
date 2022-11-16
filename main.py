@@ -16,10 +16,23 @@ import pickle
 PATH = "chromedriver.exe"
 options = webdriver.ChromeOptions()
 # options.add_argument(f'user-agent={userAgent}')
-options.headless = False
+options.headless = True
 driver = webdriver.Chrome(executable_path=PATH, options=options)
 dirPath = ""
 tiktokCookiePath = r"tiktokCookie.txt"
+
+def Controller(tag,n,path,platform):
+    global dirPath
+    dirPath = path
+    match platform:
+        case "Youtube":
+            Youtube(tag,n)
+        case "Tiktok":
+            TikTok(tag,n)
+        case "Instagram":
+            print("Instagram")
+        case "Facebook":
+            print("Facebook")
 
 def load_cookie(driver, path):
      with open(path, 'rb') as cookiesfile:
@@ -29,10 +42,8 @@ def load_cookie(driver, path):
              print('Cookie loaded')
 
 def TikTok(tag,n):
-    # userAgent = UserAgent().random
     driver.maximize_window()
     driver.get(f"https://www.tiktok.com/search/video?q=%23{tag}")
-    # driver.get("https://www.tiktok.com/")
     driver.implicitly_wait(5)
     load_cookie(driver, tiktokCookiePath)
     # ignored_exceptions=(NoSuchElementException,StaleElementReferenceException,)
@@ -59,14 +70,12 @@ def TikTok(tag,n):
         print("NoSuchElementException")
     
     print(vId)
-    tiktokAPI.getTikTokAPI(tag, vId)
+    result = tiktokAPI.getTikTokAPI(tag, vId)
+    writeToFile(result, vId, "T")
 
     
-def Youtube(tag,n, path):
-    print(tag,n)
-    global dirPath
-    dirPath = path
-    cleanFileData()
+def Youtube(tag,n):
+    cleanFileData("Youtube")
     driver.get(f"https://www.youtube.com/results?search_query=%23{tag}&sp=CAMSAhABQgUSA2cyMA%253D%253D")
     links = []
     try:
@@ -91,9 +100,9 @@ def breakList(my_list):
     final = [my_list[i * n:(i + 1) * n] for i in range((len(my_list) + n - 1) // n )]
     return final
 
-def cleanFileData():
-    clean1 = open(f"{dirPath}\Youtube_Get_Data_Result_"+".txt","w", encoding='utf-8')
-    clean2 = open(f"{dirPath}\RawVideoID.txt","w",encoding='utf-8')
+def cleanFileData(platform):
+    clean1 = open(f"{dirPath}\{platform}_Get_Data_Result"+".txt","w", encoding='utf-8')
+    clean2 = open(f"{dirPath}\{platform}_VideoID.txt","w",encoding='utf-8')
 
 def getLikesYoutubeAPI(tag, videoID):
     # resp = json.load(youtubeAPI.main(videoID))
@@ -119,18 +128,26 @@ def getLikesYoutubeAPI(tag, videoID):
             except KeyError:
                 continue
         # print(data)
-        writeToFile(data,videoID[i])
+        writeToFile(data,videoID[i],"Y")
     print("COMPLETE")
 
-def writeToFile(data,videoID):
+def writeToFile(data,videoID,platform):
     dt = datetime.now()
     ts = datetime.timestamp(dt)
-    result = open(f"{dirPath}\Youtube_Get_Data_Result_"+".txt","w+", encoding='utf-8')
-    for val in data:
-        result.writelines(f"{val[0]};;{val[1]};;{val[2]};;{val[3]};;{val[4]};;{val[5]};;{val[6]};;\n")
-    saveVideoID = open(f"{dirPath}\RawVideoID.txt","w+",encoding='utf-8')
-    for val in videoID:
-        saveVideoID.writelines(f"{val};")
+    if platform == "Y":
+        result = open(f"{dirPath}\Youtube_Get_Data_Result.txt","w+", encoding='utf-8')
+        for val in data:
+            result.writelines(f"{val[0]};;{val[1]};;{val[2]};;{val[3]};;{val[4]};;{val[5]};;{val[6]};;\n")
+        saveVideoID = open(f"{dirPath}\Youtube_VideoID.txt","w+",encoding='utf-8')
+        for val in videoID:
+            saveVideoID.writelines(f"{val};")
+    elif platform == "T":
+        result = open(f"{dirPath}\Tiktok_Get_Data_Result.txt","w+", encoding='utf-8')
+        for val in data:
+            result.writelines(f"{val[0]};;{val[1]};;{val[2]};;{val[3]};;{val[4]};;{val[5]};;{val[6]};;\n")
+        saveVideoID = open(f"{dirPath}\Tiktok_VideoID.txt","w+",encoding='utf-8')
+        for val in videoID:
+            saveVideoID.writelines(f"{val};")
 
 def Instagram(tag, n):
     driver.get("https://www.instagram.com/explore/tags/g20/")
@@ -145,6 +162,6 @@ def Instagram(tag, n):
         print("NoSuchElementException")
 
 # Youtube("indonesia",100,"D:/ADR/Personal/ADR/Self-Project/Test/get-data-selenium-build/data")
-TikTok("g20", 2)
+# TikTok("g20", 2)
 
 # Instagram("tag", 2)

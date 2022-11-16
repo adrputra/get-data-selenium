@@ -15,12 +15,16 @@ def setHastag():
     count = int(inputCount.get())
     dir = inputDir.cget("text")
     label = tk.Label(frame, text=f"Hastag : {hastag}. Count : {count}. Dir : {dir}")
-    label.grid(row=7,column=1)
+    label.grid(row=10,column=1)
     print(label)
 
-def initiateGetData():
-    print("Initiating..., ", hastag, count)
-    main.Youtube(hastag, count, dir)
+def initiateYoutube():
+    print("Initiating youtube...", hastag, count)
+    main.Controller(hastag, count, dir, "Youtube")
+
+def initiateTiktok():
+    print("Initiating Tiktok...", hastag, count)
+    main.Controller(hastag, count, dir, "Tiktok")
 
 def getDir():
     print("Getting Dir")
@@ -54,9 +58,9 @@ buttonDir.grid(row=4,column=0, columnspan=2, pady=(0,10))
 setHastagButton = tk.Button(frame, text="Set Config", padx=10, pady=5, fg="white", bg="#4287f5", command=setHastag).grid(row=5,column=0,columnspan=2, pady=(0,10))
 # setHastagButton.pack()
 
-startButton = tk.Button(frame, text="Start", padx=10, pady=5, fg="white", bg="#4287f5", command=initiateGetData).grid(row=6,column=0,columnspan=2, pady=(0,20))
-# startButton = tk.Button(frame, text="Start", padx=10, pady=5, fg="white", bg="#4287f5")
-# startButton.pack()
+startYoutube = tk.Button(frame, text="Start Youtube", padx=10, pady=5, fg="white", bg="#4287f5", command=initiateYoutube).grid(row=6,column=0,columnspan=2, pady=(0,10))
+startTiktok = tk.Button(frame, text="Start Tiktok", padx=10, pady=5, fg="white", bg="#4287f5", command=initiateTiktok).grid(row=7,column=0,columnspan=2, pady=(0,10))
+# startInstagram = tk.Button(frame, text="Start Instagram", padx=10, pady=5, fg="white", bg="#4287f5", command=initiateGetData).grid(row=8,column=0,columnspan=2, pady=(0,20))
 
 frame.place(relwidth=0.8, relheight=0.8, relx=0.5, rely=0.5, anchor="center")
 frame.pack()
