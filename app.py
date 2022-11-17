@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import filedialog
-import os
 import main
 
 hastag = ""
@@ -25,6 +24,10 @@ def initiateYoutube():
 def initiateTiktok():
     print("Initiating Tiktok...", hastag, count)
     main.Controller(hastag, count, dir, "Tiktok")
+
+def initiateInstagram():
+    print("Initiating Instagram...", hastag, count)
+    main.Controller(hastag, count, dir, "Instagram")
 
 def getDir():
     print("Getting Dir")
@@ -60,7 +63,7 @@ setHastagButton = tk.Button(frame, text="Set Config", padx=10, pady=5, fg="white
 
 startYoutube = tk.Button(frame, text="Start Youtube", padx=10, pady=5, fg="white", bg="#4287f5", command=initiateYoutube).grid(row=6,column=0,columnspan=2, pady=(0,10))
 startTiktok = tk.Button(frame, text="Start Tiktok", padx=10, pady=5, fg="white", bg="#4287f5", command=initiateTiktok).grid(row=7,column=0,columnspan=2, pady=(0,10))
-# startInstagram = tk.Button(frame, text="Start Instagram", padx=10, pady=5, fg="white", bg="#4287f5", command=initiateGetData).grid(row=8,column=0,columnspan=2, pady=(0,20))
+startInstagram = tk.Button(frame, text="Start Instagram", padx=10, pady=5, fg="white", bg="#4287f5", command=initiateInstagram).grid(row=8,column=0,columnspan=2, pady=(0,20))
 
 frame.place(relwidth=0.8, relheight=0.8, relx=0.5, rely=0.5, anchor="center")
 frame.pack()

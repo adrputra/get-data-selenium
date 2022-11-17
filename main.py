@@ -4,12 +4,10 @@ from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
-from fake_useragent import UserAgent
-import os
-import urllib.request
 from datetime import datetime
 import youtubeAPI
 import tiktokAPI
+import instagramAPI
 import time
 import pickle
 
@@ -20,6 +18,7 @@ options.headless = True
 driver = webdriver.Chrome(executable_path=PATH, options=options)
 dirPath = ""
 tiktokCookiePath = r"tiktokCookie.txt"
+instagramCookiePath = r"instagramCookie.txt"
 
 def Controller(tag,n,path,platform):
     global dirPath
@@ -30,16 +29,16 @@ def Controller(tag,n,path,platform):
         case "Tiktok":
             TikTok(tag,n)
         case "Instagram":
-            print("Instagram")
+            Instagram(tag,n)
         case "Facebook":
             print("Facebook")
 
 def load_cookie(driver, path):
-     with open(path, 'rb') as cookiesfile:
-         cookies = pickle.load(cookiesfile)
-         for cookie in cookies:
-             driver.add_cookie(cookie)
-             print('Cookie loaded')
+    with open(path, 'rb') as cookiesfile:
+        cookies = pickle.load(cookiesfile)
+        for cookie in cookies:
+            driver.add_cookie(cookie)
+    print('Cookie loaded')
 
 def TikTok(tag,n):
     driver.maximize_window()
@@ -148,19 +147,44 @@ def writeToFile(data,videoID,platform):
         saveVideoID = open(f"{dirPath}\Tiktok_VideoID.txt","w+",encoding='utf-8')
         for val in videoID:
             saveVideoID.writelines(f"{val};")
+    elif platform == "I":
+        result = open(f"{dirPath}\Instagram_Get_Data_Result.txt","w+", encoding='utf-8')
+        for val in data:
+            result.writelines(f"{val[0]};;{val[1]};;{val[2]};;{val[3]};;{val[4]};;{val[5]};;{val[6]};;\n")
+        saveVideoID = open(f"{dirPath}\Instagram_VideoID.txt","w+",encoding='utf-8')
+        for val in videoID:
+            saveVideoID.writelines(f"{val};")
 
 def Instagram(tag, n):
-    driver.get("https://www.instagram.com/explore/tags/g20/")
+    cleanFileData("Instagram")
+    driver.maximize_window()
+    driver.get(f"https://www.instagram.com/explore/tags/{tag}/")
+    driver.implicitly_wait(5)
+    load_cookie(driver, instagramCookiePath)
+    time.sleep(2.7923)
+    driver.refresh()
+    time.sleep(1.2485)
     driver.implicitly_wait(5)
     igID = []
+    # Top Post
     try:
-        for i in range(n):
+        for i in range(3):
             for j in range(3):
                 id = driver.find_element_by_xpath(f"//article//div[@class='_aaq8']//div[@class='_ac7v _aang'][{i+1}]//div[@class='_aabd _aa8k _aanf'][{j+1}]//a").get_attribute('href')
                 print(id)
+                igID.append(id)
+        for i in range(n):
+            for j in range(3):
+                id = driver.find_element_by_xpath(f"//article//div[2]//div[@class='_ac7v _aang'][{i+1}]//div[@class='_aabd _aa8k _aanf'][{j+1}]//a").get_attribute('href')
+                print(id)
+                igID.append(id)
     except NoSuchElementException:
         print("NoSuchElementException")
-
+    
+    print(igID)
+    result = instagramAPI.getInstagramAPI(tag,igID)
+    writeToFile(result, igID, "I")
+    
 # Youtube("indonesia",100,"D:/ADR/Personal/ADR/Self-Project/Test/get-data-selenium-build/data")
 # TikTok("g20", 2)
 
