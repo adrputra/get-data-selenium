@@ -14,7 +14,7 @@ import pickle
 PATH = "chromedriver.exe"
 options = webdriver.ChromeOptions()
 # options.add_argument(f'user-agent={userAgent}')
-options.headless = True
+options.headless = False
 driver = webdriver.Chrome(executable_path=PATH, options=options)
 dirPath = ""
 tiktokCookiePath = r"tiktokCookie.txt"
@@ -172,12 +172,12 @@ def Instagram(tag, n):
             for j in range(3):
                 id = driver.find_element_by_xpath(f"//article//div[@class='_aaq8']//div[@class='_ac7v _aang'][{i+1}]//div[@class='_aabd _aa8k _aanf'][{j+1}]//a").get_attribute('href')
                 print(id)
-                igID.append(id)
+                igID.append(id.split("/")[4])
         for i in range(n):
             for j in range(3):
                 id = driver.find_element_by_xpath(f"//article//div[2]//div[@class='_ac7v _aang'][{i+1}]//div[@class='_aabd _aa8k _aanf'][{j+1}]//a").get_attribute('href')
                 print(id)
-                igID.append(id)
+                igID.append(id.split("/")[4])
     except NoSuchElementException:
         print("NoSuchElementException")
     
